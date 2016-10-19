@@ -11,23 +11,25 @@ import circlrnum.yuanfei.com.recycleviewdemo.widget.BaseRecyclerAdapter;
 import circlrnum.yuanfei.com.recycleviewdemo.widget.BaseRecyclerViewHolder;
 
 /**
- * 作者 yuanfei on 2016/10/17.
+ * 作者 yuanfei on 2016/10/18.
  * 邮箱 yuanfei221@126.com
  */
 
-public class RecyclerAdapter extends BaseRecyclerAdapter<String> implements BaseRecyclerAdapter.OnItemClickLitener {
+public class GridRecycleAdapter extends BaseRecyclerAdapter<String> implements BaseRecyclerAdapter.OnItemClickLitener {
     private Context context;
 
-    public  RecyclerAdapter(Context context){
+    public GridRecycleAdapter(Context context) {
         this.context = context;
     }
+
     @Override
     public int getLayout() {
-        return R.layout.item_home;
+        return R.layout.gird_item;
     }
 
     /**
      * 数据绑定
+     *
      * @param holder
      * @param i
      * @param list
@@ -46,15 +48,15 @@ public class RecyclerAdapter extends BaseRecyclerAdapter<String> implements Base
 
     @Override
     public void onItemClick(View view, int position) {
-        Log.e("position",position+"");
+        Log.e("position", position + "");
     }
 
     @Override
     public void onItemLongClick(View view, int position) {
-        Log.e("position_long",position+"");
+        Log.e("position_long", position + "");
     }
 
-    class RecycleHoldView extends BaseRecyclerViewHolder{
+    class RecycleHoldView extends BaseRecyclerViewHolder {
 
         TextView tv;
 

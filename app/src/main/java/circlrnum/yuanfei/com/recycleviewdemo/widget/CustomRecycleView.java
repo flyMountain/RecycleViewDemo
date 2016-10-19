@@ -5,10 +5,12 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 
 import circlrnum.yuanfei.com.recycleviewdemo.R;
@@ -97,25 +99,33 @@ public class CustomRecycleView extends SwipeRefreshLayout implements SwipeRefres
             mRecycleView.setVerticalScrollBarEnabled(true);//设置滑动条
             mRecycleView.setHasFixedSize(true);//方法用来使RecyclerView保持固定的大小，该信息被用于自身的优化。
             mRecycleView.setItemAnimator(new DefaultItemAnimator());//设置分割线
-            setLinearLayout();
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
+            linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+            mRecycleView.setLayoutManager(linearLayoutManager);
         }else{
-            mRecycleView.setLayoutManager(new StaggeredGridLayoutManager(1,StaggeredGridLayoutManager.HORIZONTAL));
+            mRecycleView.setLayoutManager(new GridLayoutManager(context,2));
+            mRecycleView.setItemAnimator(new DefaultItemAnimator());
         }
         setBackgroundColor(Color.WHITE);
         mRecycleView.addOnScrollListener(mOnScrollListener);
+        //防止下拉刷新的时候 滑动页面 导致页面崩溃
+        mRecycleView.setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (mState == LoadingFooter.State.Loading){
+                    return true;
+                }else{
+                    return false;
+                }
+            }
+        });
     }
 
-    /**
-     * LinearLayoutManager
-     */
-    public void setLinearLayout() {
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
-        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        mRecycleView.setLayoutManager(linearLayoutManager);
-    }
+
     @Override
     public void onRefresh() {
         setLoadMoreable(true);
+        Log.e("onRefresh","onRefresh");
         if (mState == LoadingFooter.State.Loading) {
             //正在执行刷新或者加载更多
             setRefreshEnable(false);
