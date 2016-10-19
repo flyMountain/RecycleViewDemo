@@ -42,6 +42,8 @@ public class CustomRecycleView extends SwipeRefreshLayout implements SwipeRefres
 
     private LoadingFooter.State mState = LoadingFooter.State.Normal;//当前列表的状态
 
+    private int spanCount;//Gird
+
 
     public CustomRecycleView(Context context) {
         this(context,null);
@@ -56,9 +58,11 @@ public class CustomRecycleView extends SwipeRefreshLayout implements SwipeRefres
             if (attr == R.styleable.CustomRecycleView_divideColor) {
                 mDivideColor = a.getColor(attr, Color.RED);
             } else if (attr == R.styleable.CustomRecycleView_divideHeigth) {
-                mDivideHeigth = a.getDimensionPixelSize(attr, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources().getDisplayMetrics()));
+                mDivideHeigth = a.getDimensionPixelSize(attr, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 0, getResources().getDisplayMetrics()));
             }  else if (attr == R.styleable.CustomRecycleView_isGird) {
                 isGird = a.getBoolean(attr, false);
+            }else if (attr == R.styleable.CustomRecycleView_spanCount) {
+                spanCount = a.getIndex(attr);
             }
         }
         a.recycle();
@@ -98,14 +102,20 @@ public class CustomRecycleView extends SwipeRefreshLayout implements SwipeRefres
         if (!isGird){
             mRecycleView.setVerticalScrollBarEnabled(true);//设置滑动条
             mRecycleView.setHasFixedSize(true);//方法用来使RecyclerView保持固定的大小，该信息被用于自身的优化。
-            mRecycleView.addItemDecoration(new RecycleViewDivider(context,mDivideHeigth,mDivideColor,LinearLayoutManager.VERTICAL));//设置分割线
-
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
             linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
             mRecycleView.setLayoutManager(linearLayoutManager);
+            if (mDivideHeigth!=0){
+                mRecycleView.addItemDecoration(new RecycleViewDivider(context,mDivideHeigth,mDivideColor,LinearLayoutManager.VERTICAL));
+            }
         }else{
-            mRecycleView.setLayoutManager(new GridLayoutManager(context,2));
-            mRecycleView.addItemDecoration(new DividerGridItemDecoration(context,mDivideColor,mDivideHeigth));
+            if (spanCount == 0){
+                spanCount = 1;
+            }
+            mRecycleView.setLayoutManager(new GridLayoutManager(context,spanCount));
+            if (mDivideHeigth!=0){
+                mRecycleView.addItemDecoration(new DividerGridItemDecoration(context,mDivideColor,mDivideHeigth));//设置分割线
+            }
         }
         setBackgroundColor(Color.WHITE);
         mRecycleView.addOnScrollListener(mOnScrollListener);
@@ -137,11 +147,16 @@ public class CustomRecycleView extends SwipeRefreshLayout implements SwipeRefres
             onMutilRecyclerViewListener.onRefresh();
     }
 
-    public void setDivder() {
+    /**
+     * 设置分割线
+     * @param mDivideHeigth
+     */
+    public void setDivder(int mDivideHeigth) {
+        this.mDivideHeigth = mDivideHeigth;
         if (mDivideHeigth > 0&&!isGird) {
             mRecycleView.addItemDecoration(new RecycleViewDivider(context,mDivideHeigth,mDivideColor,LinearLayoutManager.VERTICAL));
         }else if (mDivideHeigth > 0&&isGird){
-
+            mRecycleView.addItemDecoration(new DividerGridItemDecoration(context,mDivideColor,mDivideHeigth));
         }
     }
 

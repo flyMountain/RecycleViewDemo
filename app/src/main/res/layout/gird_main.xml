@@ -10,5 +10,6 @@
     tool:isGird="true"
     tool:divideHeigth="1dp"
     tool:divideColor="@color/colorAccent"
+    tool:spanCount="3"
     ></circlrnum.yuanfei.com.recycleviewdemo.widget.CustomRecycleView>
 </LinearLayout>
