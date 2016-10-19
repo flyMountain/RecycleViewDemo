@@ -4,12 +4,12 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -22,10 +22,10 @@ import circlrnum.yuanfei.com.recycleviewdemo.R;
 public class CustomRecycleView extends SwipeRefreshLayout implements SwipeRefreshLayout.OnRefreshListener {
 
     //分割线的高度
-    private float mDivideHeigth;
+    private int mDivideHeigth = 2;
 
     //分割线的颜色
-    private int mDivideColor;
+    private int mDivideColor ;
 
     //判断是不是gridView
     private boolean isGird;
@@ -56,7 +56,7 @@ public class CustomRecycleView extends SwipeRefreshLayout implements SwipeRefres
             if (attr == R.styleable.CustomRecycleView_divideColor) {
                 mDivideColor = a.getColor(attr, Color.RED);
             } else if (attr == R.styleable.CustomRecycleView_divideHeigth) {
-                mDivideHeigth = a.getDimension(attr, 0);
+                mDivideHeigth = a.getDimensionPixelSize(attr, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources().getDisplayMetrics()));
             }  else if (attr == R.styleable.CustomRecycleView_isGird) {
                 isGird = a.getBoolean(attr, false);
             }
@@ -98,13 +98,14 @@ public class CustomRecycleView extends SwipeRefreshLayout implements SwipeRefres
         if (!isGird){
             mRecycleView.setVerticalScrollBarEnabled(true);//设置滑动条
             mRecycleView.setHasFixedSize(true);//方法用来使RecyclerView保持固定的大小，该信息被用于自身的优化。
-            mRecycleView.setItemAnimator(new DefaultItemAnimator());//设置分割线
+            mRecycleView.addItemDecoration(new RecycleViewDivider(context,mDivideHeigth,mDivideColor,LinearLayoutManager.VERTICAL));//设置分割线
+
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
             linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
             mRecycleView.setLayoutManager(linearLayoutManager);
         }else{
             mRecycleView.setLayoutManager(new GridLayoutManager(context,2));
-            mRecycleView.setItemAnimator(new DefaultItemAnimator());
+            mRecycleView.addItemDecoration(new DividerGridItemDecoration(context,mDivideColor,mDivideHeigth));
         }
         setBackgroundColor(Color.WHITE);
         mRecycleView.addOnScrollListener(mOnScrollListener);
@@ -136,9 +137,11 @@ public class CustomRecycleView extends SwipeRefreshLayout implements SwipeRefres
             onMutilRecyclerViewListener.onRefresh();
     }
 
-    public void setDiv() {
-        if (mDivideHeigth > 0) {
-            mRecycleView.addItemDecoration(new RecycleViewDivider(context,LinearLayoutManager.VERTICAL));
+    public void setDivder() {
+        if (mDivideHeigth > 0&&!isGird) {
+            mRecycleView.addItemDecoration(new RecycleViewDivider(context,mDivideHeigth,mDivideColor,LinearLayoutManager.VERTICAL));
+        }else if (mDivideHeigth > 0&&isGird){
+
         }
     }
 
